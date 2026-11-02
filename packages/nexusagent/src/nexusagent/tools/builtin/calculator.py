@@ -14,8 +14,8 @@ import math
 from collections.abc import Callable
 from typing import Any, ClassVar
 
-from ..exceptions import ToolExecutionError
-from .base import Tool
+from ...exceptions import ToolExecutionError
+from ..base import Tool
 
 _MAX_EXPRESSION_LENGTH = 500
 _MAX_EXPONENT = 10_000
@@ -35,7 +35,7 @@ class CalculatorTool(Tool):
     description = (
         "Evaluate a mathematical expression. Supports +, -, *, /, //, %, **, "
         "parentheses, unary minus, the functions abs, round, min, max, pow, "
-        "sqrt, cbrt, exp, log, log2, log10, sin, cos, tan, floor, ceil, and "
+        "sqrt, exp, log, log2, log10, sin, cos, tan, floor, ceil, and "
         "the constants pi, e, tau."
     )
     parameters: ClassVar[dict[str, Any]] = {
@@ -56,7 +56,6 @@ class CalculatorTool(Tool):
         "max": max,
         "pow": pow,
         "sqrt": math.sqrt,
-        "cbrt": math.cbrt,
         "exp": math.exp,
         "log": math.log,
         "log2": math.log2,

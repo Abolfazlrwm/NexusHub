@@ -9,10 +9,8 @@ live in the platform, not the engine.
 from __future__ import annotations
 
 from .base import Tool
-from .calculator import CalculatorTool
-from .datetime_tool import CurrentDateTimeTool
+from .builtin import CalculatorTool, CurrentDateTimeTool, UuidTool
 from .registry import ToolRegistry
-from .uuid_tool import UuidTool
 
 __all__ = [
     "CalculatorTool",

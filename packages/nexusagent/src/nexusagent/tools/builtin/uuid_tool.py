@@ -5,8 +5,8 @@ from __future__ import annotations
 import uuid
 from typing import Any, ClassVar
 
-from ..exceptions import ToolExecutionError
-from .base import Tool
+from ...exceptions import ToolExecutionError
+from ..base import Tool
 
 _MAX_COUNT = 32
 
