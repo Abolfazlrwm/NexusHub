@@ -87,8 +87,8 @@ The engine is a standalone, publishable package that the platform consumes: the 
 
 NexusHub is under active development. Work lands on feature branches and is merged into `main` milestone by milestone.
 
-- [ ] **nexusagent runtime** — types, tool calling, memory, streaming, tracing
-- [ ] **Built-in tools** — calculator, datetime, uuid
+- [x] **nexusagent runtime** — types, tool calling, memory, streaming, tracing
+- [x] **Built-in tools** — calculator, datetime, uuid
 - [ ] **FastAPI gateway** — agent CRUD, chat with SSE streaming, API-key auth
 - [ ] **Runs & traces** — full run history with per-step traces
 - [ ] **RAG pipeline** — document ingestion, embeddings, pgvector retrieval
