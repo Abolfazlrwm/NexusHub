@@ -7,16 +7,16 @@ messages into it so the next run in the same session continues the thread.
 
 from __future__ import annotations
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, status
 
 from .. import crud
-from ..deps import PageParams, SessionDep
+from ..deps import PageParams, SessionDep, require_api_key
 from ..errors import NotFoundError
 from ..models import Agent, ChatSession
 from ..pagination import Page
 from ..schemas import MessageRead, SessionCreate, SessionRead
 
-router = APIRouter(tags=["sessions"])
+router = APIRouter(tags=["sessions"], dependencies=[Depends(require_api_key)])
 
 
 def _get_agent_or_404(session: SessionDep, agent_id: str) -> Agent:

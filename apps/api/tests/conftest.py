@@ -22,11 +22,21 @@ def client(settings):
 
 
 @pytest.fixture
-def agent(client):
+def headers(client):
+    """Authenticate via the bootstrap rule (no active keys yet)."""
+    response = client.post("/v1/api-keys", json={"name": "tests"})
+    assert response.status_code == 201
+    key = response.json()["key"]
+    return {"Authorization": f"Bearer {key}"}
+
+
+@pytest.fixture
+def agent(client, headers):
     """One created agent, ready for sessions and runs."""
     response = client.post(
         "/v1/agents",
         json={"name": "helper", "system_prompt": "You are helpful."},
+        headers=headers,
     )
     assert response.status_code == 201
     return response.json()

@@ -2,16 +2,16 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, status
 
 from .. import crud
-from ..deps import PageParams, SessionDep
+from ..deps import PageParams, SessionDep, require_api_key
 from ..errors import ConflictError, NotFoundError
 from ..models import Agent
 from ..pagination import Page
 from ..schemas import AgentCreate, AgentRead, AgentUpdate
 
-router = APIRouter(prefix="/agents", tags=["agents"])
+router = APIRouter(prefix="/agents", tags=["agents"], dependencies=[Depends(require_api_key)])
 
 
 def _get_or_404(session: SessionDep, agent_id: str) -> Agent:
