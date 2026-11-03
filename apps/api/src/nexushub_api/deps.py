@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Callable, Iterator
 from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, Request
 from sqlmodel import Session
 
 from nexusagent import ChatProvider, ProviderRegistry
@@ -23,8 +23,9 @@ from .settings import Settings
 ProviderFactory = Callable[..., ChatProvider]
 
 
-def get_settings() -> Settings:
-    return Settings()
+def get_settings(request: Request) -> Settings:
+    """Read settings from app state, so ``create_app(settings)`` owns config."""
+    return request.app.state.settings
 
 
 SettingsDep = Annotated[Settings, Depends(get_settings)]
