@@ -29,6 +29,10 @@ def get_agent(session: Session, agent_id: str) -> Agent | None:
     return session.get(Agent, agent_id)
 
 
+def get_agent_by_name(session: Session, name: str) -> Agent | None:
+    return session.exec(select(Agent).where(Agent.name == name)).first()
+
+
 def list_agents(session: Session, limit: int, offset: int) -> tuple[list[Agent], int]:
     total = session.exec(select(func.count()).select_from(Agent)).one()
     items = list(session.exec(select(Agent).order_by(Agent.created_at).offset(offset).limit(limit)))
