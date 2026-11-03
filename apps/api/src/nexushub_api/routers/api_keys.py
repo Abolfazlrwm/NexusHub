@@ -12,7 +12,7 @@ from fastapi import APIRouter, status
 from .. import crud
 from ..deps import SessionDep
 from ..errors import ConflictError, NotFoundError
-from ..schemas import ApiKeyCreated, ApiKeyCreate, ApiKeyRead
+from ..schemas import ApiKeyCreate, ApiKeyCreated, ApiKeyRead
 from ..security import generate_api_key, hash_api_key, key_prefix
 
 router = APIRouter(prefix="/api-keys", tags=["api keys"])

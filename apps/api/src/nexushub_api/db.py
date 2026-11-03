@@ -8,7 +8,7 @@ SQLAlchemy untouched, so a Postgres URL works by only changing settings.
 
 from __future__ import annotations
 
-from functools import lru_cache
+from functools import cache
 from typing import Any
 
 from sqlalchemy.engine import Engine
@@ -19,7 +19,7 @@ from .models import load_models  # noqa: F401  (imported so metadata is populate
 from .settings import Settings
 
 
-@lru_cache(maxsize=None)
+@cache
 def get_engine(database_url: str) -> Engine:
     """Build (once) and return the engine for a database URL."""
     kwargs: dict[str, Any] = {}

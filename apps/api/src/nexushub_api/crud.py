@@ -9,11 +9,10 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlmodel import Session, func, select
+from sqlmodel import Session, col, func, select
 
 from .models import Agent, ApiKey, ChatSession, Message, Run, new_id, utcnow
 from .schemas import AgentCreate, AgentUpdate, SessionCreate
-
 
 # -- agents ---------------------------------------------------------------------
 
@@ -35,7 +34,8 @@ def get_agent_by_name(session: Session, name: str) -> Agent | None:
 
 def list_agents(session: Session, limit: int, offset: int) -> tuple[list[Agent], int]:
     total = session.exec(select(func.count()).select_from(Agent)).one()
-    items = list(session.exec(select(Agent).order_by(Agent.created_at).offset(offset).limit(limit)))
+    query = select(Agent).order_by(col(Agent.created_at)).offset(offset).limit(limit)
+    items = list(session.exec(query))
     return items, int(total)
 
 
@@ -71,11 +71,12 @@ def find_api_key_by_hash(session: Session, key_hash: str) -> ApiKey | None:
 
 
 def count_active_api_keys(session: Session) -> int:
-    return int(session.exec(select(func.count()).select_from(ApiKey).where(ApiKey.revoked_at.is_(None))).one())
+    query = select(func.count()).select_from(ApiKey).where(col(ApiKey.revoked_at).is_(None))
+    return int(session.exec(query).one())
 
 
 def list_api_keys(session: Session) -> list[ApiKey]:
-    return list(session.exec(select(ApiKey).order_by(ApiKey.created_at)))
+    return list(session.exec(select(ApiKey).order_by(col(ApiKey.created_at))))
 
 
 def revoke_api_key(session: Session, key: ApiKey) -> ApiKey:
@@ -99,10 +100,14 @@ def get_session_by_id(session: Session, chat_session_id: str) -> ChatSession | N
     return session.get(ChatSession, chat_session_id)
 
 
-def list_sessions_for_agent(session: Session, agent_id: str, limit: int, offset: int) -> tuple[list[ChatSession], int]:
+def list_sessions_for_agent(
+    session: Session, agent_id: str, limit: int, offset: int
+) -> tuple[list[ChatSession], int]:
     base = select(ChatSession).where(ChatSession.agent_id == agent_id)
-    total = session.exec(select(func.count()).select_from(ChatSession).where(ChatSession.agent_id == agent_id)).one()
-    items = list(session.exec(base.order_by(ChatSession.created_at).offset(offset).limit(limit)))
+    count = select(func.count()).select_from(ChatSession).where(ChatSession.agent_id == agent_id)
+    total = session.exec(count).one()
+    query = base.order_by(col(ChatSession.created_at)).offset(offset).limit(limit)
+    items = list(session.exec(query))
     return items, int(total)
 
 
@@ -135,7 +140,12 @@ def add_message(
 
 
 def list_messages(session: Session, chat_session_id: str) -> list[Message]:
-    return list(session.exec(select(Message).where(Message.session_id == chat_session_id).order_by(Message.created_at, Message.id)))
+    query = (
+        select(Message)
+        .where(Message.session_id == chat_session_id)
+        .order_by(col(Message.created_at), col(Message.id))
+    )
+    return list(session.exec(query))
 
 
 # -- runs -----------------------------------------------------------------------
@@ -148,7 +158,13 @@ def create_run(
     text_input: str,
     chat_session_id: str | None,
 ) -> Run:
-    run = Run(agent_id=agent.id, session_id=chat_session_id, input=text_input, model=agent.model, provider=agent.provider)
+    run = Run(
+        agent_id=agent.id,
+        session_id=chat_session_id,
+        input=text_input,
+        model=agent.model,
+        provider=agent.provider,
+    )
     session.add(run)
     session.flush()
     return run
@@ -190,12 +206,15 @@ def get_run(session: Session, run_id: str) -> Run | None:
     return session.get(Run, run_id)
 
 
-def list_runs(session: Session, agent_id: str | None, limit: int, offset: int) -> tuple[list[Run], int]:
+def list_runs(
+    session: Session, agent_id: str | None, limit: int, offset: int
+) -> tuple[list[Run], int]:
     base = select(Run)
     count = select(func.count()).select_from(Run)
     if agent_id is not None:
         base = base.where(Run.agent_id == agent_id)
         count = count.where(Run.agent_id == agent_id)
     total = session.exec(count).one()
-    items = list(session.exec(base.order_by(Run.created_at).offset(offset).limit(limit)))
+    query = base.order_by(col(Run.created_at)).offset(offset).limit(limit)
+    items = list(session.exec(query))
     return items, int(total)

@@ -11,9 +11,8 @@ from collections.abc import Callable, Iterator
 from typing import Annotated
 
 from fastapi import Depends, Request
-from sqlmodel import Session
-
 from nexusagent import ChatProvider, ProviderRegistry
+from sqlmodel import Session
 
 from .db import engine_from_settings, open_session
 from .pagination import clamp_pagination
