@@ -13,8 +13,6 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import StreamingResponse
-from sqlmodel import Session
-
 from nexusagent import NexusAgentError
 from nexusagent.agents import RunFinishedEvent
 
@@ -36,7 +34,9 @@ def _get_agent_or_404(session: SessionDep, agent_id: str) -> Agent:
     return agent
 
 
-def _resolve_session(session: SessionDep, agent: Agent, session_id: str | None) -> ChatSession | None:
+def _resolve_session(
+    session: SessionDep, agent: Agent, session_id: str | None
+) -> ChatSession | None:
     if session_id is None:
         return None
     chat_session = crud.get_session_by_id(session, session_id)
@@ -48,16 +48,23 @@ def _resolve_session(session: SessionDep, agent: Agent, session_id: str | None) 
 @router.post(
     "/agents/{agent_id}/runs", status_code=status.HTTP_201_CREATED, response_model=RunRead
 )
-async def create_run(agent_id: str, data: RunCreate, session: SessionDep, factory: ProviderFactoryDep) -> Run:
+async def create_run(
+    agent_id: str, data: RunCreate, session: SessionDep, factory: ProviderFactoryDep
+) -> Run:
     agent = _get_agent_or_404(session, agent_id)
     chat_session = _resolve_session(session, agent, data.session_id)
+    chat_session_id = chat_session.id if chat_session else None
     run = crud.create_run(
-        session, agent=agent, text_input=data.input, chat_session_id=chat_session.id if chat_session else None
+        session, agent=agent, text_input=data.input, chat_session_id=chat_session_id
     )
     crud.mark_run_running(session, run)
     try:
         result, prior = await execute_run(
-            session, agent_row=agent, text=data.input, chat_session=chat_session, provider_factory=factory
+            session,
+            agent_row=agent,
+            text=data.input,
+            chat_session=chat_session,
+            provider_factory=factory,
         )
     except NexusAgentError as exc:
         crud.mark_run_finished(session, run, error=str(exc))
@@ -88,11 +95,14 @@ async def create_run(agent_id: str, data: RunCreate, session: SessionDep, factor
 
 
 @router.post("/agents/{agent_id}/runs/stream", response_class=StreamingResponse)
-async def stream_run(agent_id: str, data: RunCreate, session: SessionDep, factory: ProviderFactoryDep) -> StreamingResponse:
+async def stream_run(
+    agent_id: str, data: RunCreate, session: SessionDep, factory: ProviderFactoryDep
+) -> StreamingResponse:
     agent = _get_agent_or_404(session, agent_id)
     chat_session = _resolve_session(session, agent, data.session_id)
+    chat_session_id = chat_session.id if chat_session else None
     run = crud.create_run(
-        session, agent=agent, text_input=data.input, chat_session_id=chat_session.id if chat_session else None
+        session, agent=agent, text_input=data.input, chat_session_id=chat_session_id
     )
     crud.mark_run_running(session, run)
     engine_agent, prior = prepare_agent_run(

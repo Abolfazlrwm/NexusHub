@@ -14,24 +14,26 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from sqlmodel import Session
-
 from nexusagent import (
     Agent,
     AgentConfig,
     AgentRunResult,
     InMemoryMemory,
-    Message as EngineMessage,
     Role,
     ToolCall,
     ToolRegistry,
     register_builtin_tools,
 )
+from nexusagent import (
+    Message as EngineMessage,
+)
+from sqlmodel import Session
 
-from . import crud
-from .deps import ProviderFactory
-from .models import Agent as AgentRow
-from .models import ChatSession, Message as StoredMessage
+from .. import crud
+from ..deps import ProviderFactory
+from ..models import Agent as AgentRow
+from ..models import ChatSession
+from ..models import Message as StoredMessage
 
 
 def provider_kwargs(agent_row: AgentRow) -> dict[str, Any]:
@@ -116,11 +118,12 @@ def persist_new_messages(
 ) -> list[StoredMessage]:
     """Store the messages a run appended to the conversation.
 
-    The engine seeds ``[system?] + prior + [user input]`` before looping,
-    so everything past that prefix is new. Memory is unbounded on the
-    gateway side, which keeps this slice stable.
+    The engine seeds ``[system?]`` before the replayed prior messages, so
+    the full in-memory history is ``[system?] + prior + exchange``. The
+    system message is transient (re-seeded every run, never stored); the
+    stored transcript gains everything after it.
     """
-    offset = len(prior) + 1 + (1 if has_system_prompt else 0)
+    offset = (1 if has_system_prompt else 0) + len(prior)
     added = full[offset:] if len(full) > offset else []
     rows: list[StoredMessage] = []
     for message in added:

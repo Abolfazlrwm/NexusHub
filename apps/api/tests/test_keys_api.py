@@ -31,7 +31,7 @@ def test_revoke_and_conflict(client, headers):
     first = client.delete(f"/v1/api-keys/{body['id']}", headers=headers)
     assert first.status_code == 204
     listed = client.get("/v1/api-keys", headers=headers).json()
-    revoked = [item for item in listed if item["id"] == body["id"]][0]
+    revoked = next(item for item in listed if item["id"] == body["id"])
     assert revoked["revoked_at"] is not None
 
     again = client.delete(f"/v1/api-keys/{body['id']}", headers=headers)
