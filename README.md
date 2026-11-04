@@ -89,8 +89,8 @@ NexusHub is under active development. Work lands on feature branches and is merg
 
 - [x] **nexusagent runtime** — types, tool calling, memory, streaming, tracing
 - [x] **Built-in tools** — calculator, datetime, uuid
-- [ ] **FastAPI gateway** — agent CRUD, chat with SSE streaming, API-key auth
-- [ ] **Runs & traces** — full run history with per-step traces
+- [x] **FastAPI gateway** — agent CRUD, chat with SSE streaming, API-key auth
+- [x] **Runs & traces** — full run history with per-step traces
 - [ ] **RAG pipeline** — document ingestion, embeddings, pgvector retrieval
 - [ ] **Job queue** — Redis + arq async workers
 - [ ] **Eval engine** — YAML datasets, parallel runs, scoring, comparison
