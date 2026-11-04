@@ -23,7 +23,9 @@ router = APIRouter(prefix="/api-keys", tags=["api keys"])
 
 
 @router.post("", status_code=status.HTTP_201_CREATED, response_model=ApiKeyCreated)
-def create_api_key(data: ApiKeyCreate, session: SessionDep, credentials: CredentialsDep) -> ApiKeyCreated:
+def create_api_key(
+    data: ApiKeyCreate, session: SessionDep, credentials: CredentialsDep
+) -> ApiKeyCreated:
     if crud.count_active_api_keys(session) > 0:
         check_api_key(credentials, session)
     plaintext = generate_api_key()

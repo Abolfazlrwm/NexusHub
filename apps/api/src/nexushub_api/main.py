@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from . import __version__
 from .db import engine_from_settings, init_db
 from .errors import register_exception_handlers
-from .routers import agents, api_keys, health, sessions
+from .routers import agents, api_keys, health, runs, sessions
 from .settings import Settings
 
 
@@ -52,6 +52,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(api_keys.router, prefix="/v1")
     app.include_router(agents.router, prefix="/v1")
     app.include_router(sessions.router, prefix="/v1")
+    app.include_router(runs.router, prefix="/v1")
 
     return app
 

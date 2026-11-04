@@ -102,6 +102,35 @@ YAML dataset (cases: input + expected)
   route around the failure. Crashes are reserved for infrastructure errors
   (auth, connectivity, budget).
 
+## Gateway implementation notes (v0.2)
+
+The shipped gateway keeps the HTTP layer deliberately thin over the runtime:
+
+- **The run contract.** Creating a run always succeeds (201) while the agent
+  and session exist; the *outcome lives on the run resource*. A provider
+  outage records `status="failed"` with the engine's error message instead
+  of returning a transient 5xx — clients get a durable record of what
+  happened.
+- **Sessions are the storage side of conversations.** The engine re-seeds its
+  system prompt on every run; the database stores only the real exchange
+  (`user` / `assistant` / `tool` messages). Each run in a session replays the
+  stored transcript into the agent's memory before executing, and the
+  in-run memory is unbounded — the database is the source of truth, so
+  nothing is trimmed between storage and replay.
+- **SSE passthrough.** The stream endpoint forwards the engine's event
+  protocol verbatim (`run_started`, `iteration_started`, `text_delta`,
+  `tool_call_started/finished`, `run_finished`) and adds `run_failed` for
+  upstream errors. Streamed runs record tool steps and iteration counts;
+  full model-call traces come from the synchronous endpoint today.
+- **One error envelope.** Every error answers
+  `{"error": {"code", "message"}}`. Engine failures map to `502 upstream_error`
+  (the provider is the problem, not the caller); configuration mistakes map
+  to `500 config_error`.
+- **Key bootstrap.** The first active API key can be created without
+  credentials — otherwise nobody could ever create one. After that, key
+  management requires an authenticated caller. Only SHA-256 hashes are
+  stored; the plaintext is returned exactly once.
+
 ## Security notes
 
 - API keys are stored hashed; the plaintext key is shown exactly once at

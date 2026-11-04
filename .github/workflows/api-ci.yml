@@ -1,0 +1,47 @@
+name: api-ci
+
+on:
+  push:
+    paths:
+      - "apps/api/**"
+      - "packages/nexusagent/**"
+      - ".github/workflows/api-ci.yml"
+  pull_request:
+    paths:
+      - "apps/api/**"
+      - "packages/nexusagent/**"
+      - ".github/workflows/api-ci.yml"
+
+jobs:
+  test:
+    name: lint + typecheck + test (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install engine, gateway and dev tools
+        run: |
+          pip install -e "packages/nexusagent[dev]"
+          pip install -e "apps/api[dev]"
+
+      - name: Lint (ruff)
+        run: |
+          ruff check packages/nexusagent
+          ruff check apps/api
+
+      - name: Type-check (mypy)
+        working-directory: apps/api
+        run: mypy src
+
+      - name: Test (pytest)
+        working-directory: apps/api
+        run: pytest -q
