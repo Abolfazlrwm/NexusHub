@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `nexushub-api` gateway: FastAPI app factory with typed `NEXUS_`-prefixed
+  settings and SQLModel persistence (agents, api keys, chat sessions,
+  messages, runs) on SQLite or Postgres
+- Agent, session, message, run and api-key CRUD endpoints with pagination
+  and one stable error envelope
+- Bearer API-key authentication: SHA-256 hashed keys, plaintext shown once,
+  revocation, `last_used_at` tracking and first-key bootstrap rule
+- Run execution bridged to the nexusagent runtime: provider resolution per
+  agent (`provider_config` overrides, `OPENAI_*` env fallback), built-in
+  tools, session history replay and transcript persistence
+- SSE streaming endpoint forwarding the engine event protocol verbatim
+  (`run_started` ... `run_finished`, plus `run_failed` on upstream errors)
+- Per-run observability: status, usage, finish reason and trace JSON; the
+  synchronous endpoint stores the engine's full step trace
+- `api-ci` workflow (ruff, mypy, pytest on Python 3.10-3.13), Makefile
+  tasks, curl walkthrough example and gateway README/architecture docs
+- 38 gateway tests (115 total in the monorepo)
+
+
 ## [0.1.0] - 2026-11-03
 
 ### Added
