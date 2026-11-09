@@ -2,9 +2,13 @@
 
 # NexusHub
 
+<p align="center"><img src="assets/banner.png" alt="nexushub banner" width="100%"></p>
+
 **Self-hosted AI agent platform — build, run, evaluate.**
 
 FastAPI · Next.js · PostgreSQL + pgvector · Redis — powered by the [nexusagent](packages/nexusagent) runtime
+
+<p align="center"><img src="assets/architecture.png" alt="nexushub architecture" width="88%"></p>
 
 [![engine-ci](https://github.com/Abolfazlrwm/NexusHub/actions/workflows/engine-ci.yml/badge.svg)](https://github.com/Abolfazlrwm/NexusHub/actions/workflows/engine-ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
