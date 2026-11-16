@@ -2,9 +2,9 @@
 
 # NexusHub
 
-**پلتفرم متن‌باز و self-hosted برای ساخت، اجرا، ارزیابی و مدیریت AI Agent ها.**
+**پلتفرم متن‌باز و self-hosted برای ساخت، اجرا و مدیریت AI Agent ها — با trace کامل و موتور eval در نقشه‌ی راه.**
 
-FastAPI · Next.js · PostgreSQL + pgvector · Redis — با موتور [nexusagent](packages/nexusagent)
+با موتور [nexusagent](packages/nexusagent) · گیت‌وی FastAPI منتشرشده است — داشبورد Next.js، RAG با pgvector و صف Redis در نقشه‌ی راه‌اند
 
 [![engine-ci](https://github.com/Abolfazlrwm/NexusHub/actions/workflows/engine-ci.yml/badge.svg)](https://github.com/Abolfazlrwm/NexusHub/actions/workflows/engine-ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -19,15 +19,15 @@ FastAPI · Next.js · PostgreSQL + pgvector · Redis — با موتور [nexusa
 
 ## NexusHub چیست؟
 
-NexusHub یک پلتفرم متن‌باز و **self-hosted برای ساخت، اجرا، ارزیابی و مدیریت AI Agent** ها است — چیزی شبیه Dify یا LangSmith، ولی سبک‌تر، ساده‌تر و کاملاً روی زیرساخت خودت.
+NexusHub یک پلتفرم متن‌باز و **self-hosted برای ساخت، اجرا و مدیریت AI Agent** ها است — چیزی شبیه Dify یا LangSmith، ولی سبک‌تر، ساده‌تر و کاملاً روی زیرساخت خودت.
 
-کل ایده‌ی پروژه این است: **اگر نتوانی agent ات را بسنجی، نمی‌توانی آن را منتشر کنی.** به همین دلیل ارزیابی (eval) و ردیابی (trace) افزودنی دیرهنگام نیستند — از روز اول بخشی از هسته‌ی سیستم هستند.
+کل ایده‌ی پروژه این است: **اگر نتوانی agent ات را بسنجی، نمی‌توانی آن را منتشر کنی.** امروز هر run به‌طور کامل trace می‌شود — هر فراخوانی مدل و ابزار، تعداد توکن و latency — و موتور ارزیابی (دیتاست YAML، امتیازدهی LLM-as-judge، مقایسه‌ی نسخه‌ها) مایل‌استون بعدی است.
 
 | دردسر رایج | راه‌حل NexusHub |
 | --- | --- |
-| پلتفرم‌های ابریِ agent، داده‌هایت را بیرون از شرکت می‌فرستند | همه‌چیز روی سرور خودت اجرا می‌شود — فقط `docker compose up` بزن |
-| ابزارهای متن‌بازِ agent معمولاً eval ندارند | موتور eval در هسته: دیتاست YAML، اجرای موازی، امتیازدهی با LLM-as-judge، مقایسه نسخه‌ها کنار هم |
-| یک ابزار برای RAG، یک ابزار برای eval، یک ابزار برای trace | یک پلتفرم واحد: سازنده‌ی agent، پلی‌گراند چت، RAG، trace و eval همه کنار هم |
+| پلتفرم‌های ابریِ agent، داده‌هایت را بیرون از شرکت می‌فرستند | ذاتاً self-hosted — همه‌چیز روی سرور خودت اجرا می‌شود؛ docker compose با یک دستور در نقشه‌ی راه است |
+| ابزارهای متن‌بازِ agent معمولاً eval ندارند | امروز runtime با trace کامل؛ موتور eval — دیتاست YAML، امتیازدهی LLM-as-judge، مقایسه‌ی نسخه‌ها — مایل‌استون بعدی است |
+| یک ابزار برای RAG، یک ابزار برای eval، یک ابزار برای trace | یک پلتفرم واحد روی یک هسته: امروز trace و observability، و RAG و eval هم روی همان هسته می‌نشینند |
 
 ## معماری
 
@@ -74,12 +74,14 @@ NexusHub/
 ├── packages/
 │   └── nexusagent/      # موتور اجرای agent (پکیج مستقل پایتونی)
 ├── apps/
-│   ├── api/             # گیت‌وی FastAPI     (مایل‌استون بعدی)
+│   ├── api/             # گیت‌وی FastAPI     (منتشرشده)
 │   └── dashboard/       # داشبورد Next.js    (مایل‌استون بعدی)
 ├── docs/                # مستندات معماری و طراحی
 ├── docker-compose.yml   # خودمیزبانی با یک دستور (مایل‌استون بعدی)
 └── Makefile             # تسک‌های توسعه (lint / typecheck / test)
 ```
+
+مسیرهایی که (مایل‌استون بعدی) خورده‌اند هنوز روی `main` وجود ندارند — هم‌گام با مایل‌استون خودشان اضافه می‌شوند.
 
 موتور یک پکیج مستقل و قابل انتشار است که پلتفرم از آن استفاده می‌کند: موتور به‌تنهایی کار می‌کند و پلتفرم آن را به محصول تبدیل می‌کند.
 

@@ -4,9 +4,9 @@
 
 <p align="center"><img src="assets/banner.png" alt="nexushub banner" width="100%"></p>
 
-**Self-hosted AI agent platform — build, run, evaluate.**
+**Self-hosted AI agent platform — build, run, trace.**
 
-FastAPI · Next.js · PostgreSQL + pgvector · Redis — powered by the [nexusagent](packages/nexusagent) runtime
+Powered by the [nexusagent](packages/nexusagent) runtime · the FastAPI gateway is live — Next.js dashboard, pgvector RAG and the Redis queue are on the [roadmap](#status--roadmap)
 
 <p align="center"><img src="assets/architecture.png" alt="nexushub architecture" width="88%"></p>
 
@@ -23,15 +23,15 @@ English · [فارسی](README.fa.md)
 
 ## What is NexusHub?
 
-NexusHub is an open-source, **self-hosted platform for building, running, evaluating and managing AI agents** — think Dify or LangSmith, but lighter, simpler, and entirely on your own infrastructure.
+NexusHub is an open-source, **self-hosted platform for building, running and managing AI agents** — think Dify or LangSmith, but lighter, simpler, and entirely on your own infrastructure.
 
-It is built on one core idea: **you cannot ship an agent you cannot measure.** Evaluation, tracing and observability are not bolted on top — they are part of the runtime from day one.
+It is built on one core idea: **you cannot ship an agent you cannot measure.** Every run is fully traced today — every model call, tool call, token count and latency — and the eval engine (YAML datasets, LLM-as-judge scoring, version comparison) is the next milestone.
 
 | Common pain | NexusHub answer |
 | --- | --- |
-| Cloud agent platforms send your data outside the company | Everything runs on your own server — `docker compose up` and you are done |
-| Most open-source agent tools have no eval story | An eval engine in the core: YAML datasets, parallel runs, LLM-as-judge scoring, side-by-side version comparison |
-| One tool for RAG, another for eval, another for tracing | One platform: agent builder, chat playground, RAG, traces and evals side by side |
+| Cloud agent platforms send your data outside the company | Self-hosted by design — everything runs on your own server; one-command docker compose is on the roadmap |
+| Most open-source agent tools have no eval story | A tracing-first runtime today; the eval engine — YAML datasets, LLM-as-judge scoring, version comparison — is the next milestone |
+| One tool for RAG, another for eval, another for tracing | One platform on one runtime: traces and observability today, RAG and evals landing on the same core |
 
 ## Architecture
 
@@ -78,12 +78,14 @@ NexusHub/
 ├── packages/
 │   └── nexusagent/      # The agent runtime engine (standalone Python package)
 ├── apps/
-│   ├── api/             # FastAPI gateway   (upcoming milestone)
+│   ├── api/             # FastAPI gateway   (shipped)
 │   └── dashboard/       # Next.js dashboard  (upcoming milestone)
 ├── docs/                # Architecture and design documents
 ├── docker-compose.yml   # One-command self-hosting (upcoming milestone)
 └── Makefile             # Dev tasks (lint / typecheck / test)
 ```
+
+Paths marked *(upcoming milestone)* do not exist on `main` yet — they land together with their milestone.
 
 The engine is a standalone, publishable package that the platform consumes: the runtime works on its own, and the platform turns it into a product.
 

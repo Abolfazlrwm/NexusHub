@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   synchronous endpoint stores the engine's full step trace
 - `api-ci` workflow (ruff, mypy, pytest on Python 3.10-3.13), Makefile
   tasks, curl walkthrough example and gateway README/architecture docs
-- 38 gateway tests (115 total in the monorepo)
+- 38 gateway tests (135 test functions in the monorepo: 97 engine + 38 gateway)
 
 
 ## [0.1.0] - 2026-11-03
@@ -52,8 +52,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned
 
-- FastAPI gateway: agent CRUD, chat streaming over SSE, API-key authentication
-- Run history with full per-step traces
 - RAG pipeline: document ingestion, embeddings, pgvector retrieval
 - Async job queue on Redis + arq
 - Eval engine: YAML datasets, parallel runs, scoring, comparison reports
