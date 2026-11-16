@@ -4,7 +4,17 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
-  - package-ecosystem: pip
-    directory: "/"
+  # Python deps live in two uv-managed packages, not in a root manifest:
+  # apps/api/pyproject.toml and packages/nexusagent/pyproject.toml. The
+  # pip updater has nothing to read at "/" and errored out every week
+  # ("dependency_file_not_found: No files found in /"), which is what
+  # kept the Actions tab red. The uv updater reads pyproject.toml
+  # directly and updates uv.lock when one exists.
+  - package-ecosystem: "uv"
+    directory: "/apps/api"
+    schedule:
+      interval: weekly
+  - package-ecosystem: "uv"
+    directory: "/packages/nexusagent"
     schedule:
       interval: weekly
