@@ -1,3 +1,9 @@
+> [!WARNING]
+> **Status: Alpha — under active development, not production-ready.**
+> **Shipped on `main`:** the `nexusagent` runtime (tool calling, memory, streaming, tracing) · built-in tools · FastAPI gateway (agent CRUD, SSE chat, API-key auth) · runs & per-step traces.
+> **Roadmap — does not exist on `main` yet:** RAG pipeline (pgvector) · Redis + arq job queue · eval engine · Next.js dashboard · docker-compose self-hosting.
+> The architecture diagram below shows the *target* platform; every unchecked box in [Status & roadmap](#status--roadmap) is not implemented yet. Do not deploy this as a finished product.
+
 <div align="center">
 
 # NexusHub
