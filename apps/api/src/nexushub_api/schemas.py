@@ -10,7 +10,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_serializer
 
 RUN_STATUS_VALUES = ("pending", "running", "completed", "failed")
 
@@ -39,6 +39,22 @@ class AgentUpdate(BaseModel):
     provider_config: dict[str, Any] | None = None
 
 
+# Keys whose values must never leave the server verbatim (provider_config
+# may carry an OpenAI-compatible api_key).
+_PROVIDER_SECRET_KEYS = {"api_key", "apikey", "secret", "token", "password", "authorization"}
+
+
+def _mask_provider_config(cfg: dict[str, Any] | None) -> dict[str, Any]:
+    """Redact secret-looking provider_config values, keeping a 4-char tail."""
+    out: dict[str, Any] = {}
+    for key, value in (cfg or {}).items():
+        if key.lower() in _PROVIDER_SECRET_KEYS and isinstance(value, str) and value:
+            out[key] = f"***{value[-4:]}" if len(value) > 4 else "***"
+        else:
+            out[key] = value
+    return out
+
+
 class AgentRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -53,6 +69,12 @@ class AgentRead(BaseModel):
     provider_config: dict[str, Any]
     created_at: datetime
     updated_at: datetime
+
+    @field_serializer("provider_config")
+    def _serialize_provider_config(self, cfg: dict[str, Any], _info: object) -> dict[str, Any]:
+        # GET responses never echo stored secrets; the runner reads the
+        # unmasked values straight from storage.
+        return _mask_provider_config(cfg)
 
 
 # -- api keys -------------------------------------------------------------------

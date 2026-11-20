@@ -67,3 +67,23 @@ def test_unknown_agent_is_404(client, headers):
     response = client.get("/v1/agents/does-not-exist", headers=headers)
     assert response.status_code == 404
     assert response.json()["error"]["code"] == "not_found"
+
+
+def test_get_agent_masks_provider_secrets(client, headers):
+    """Stored provider secrets never leave the server verbatim (GET responses)."""
+    created = client.post(
+        "/v1/agents",
+        json={
+            "name": "with-secrets",
+            "provider_config": {"api_key": "sk-supersecret-value-1234", "base_url": "https://api.example.com/v1"},
+        },
+        headers=headers,
+    ).json()
+
+    fetched = client.get(f"/v1/agents/{created['id']}", headers=headers)
+    assert fetched.status_code == 200
+    config = fetched.json()["provider_config"]
+    assert config["api_key"] == "***1234"
+    assert "sk-supersecret" not in fetched.text
+    # non-secret fields stay verbatim so the UI can still render them
+    assert config["base_url"] == "https://api.example.com/v1"
